@@ -39,6 +39,8 @@
         this.kind = "square";
 
         this.speed = 25;
+
+        this.id = this.board.bars.indexOf(this);
     }
 
     Bar.prototype = {
@@ -85,6 +87,7 @@
                 this.clean();
                 this.draw();
                 this.check_collisions();
+                this.check_collisionsEnd();
                 this.board.ball.move();
             }
 
@@ -98,6 +101,21 @@
                 if (hit2(bar, this.board.ball)) {
                     this.board.ball.collision(bar);
                 }
+            }
+        },
+        check_collisions2: function () {
+            for (var index = this.board.bars.length - 1; index >= 0; index--) {
+                var bar = this.board.bars[index];
+
+                if (hit2(this.board.ball, bar)) {
+                    this.board.ball.collision2(bar);
+                }
+
+            }
+        },
+        check_collisionsEnd: function () {
+            if (hitEnd(this.board.ball, this.board)) {
+                location.reload();
             }
         }
     }
@@ -129,14 +147,50 @@
         return hit;
     }
 
+    function hit2(ball, board) {
+        //revisa si a colicionna con b
+        var hit = false;
+        //Colisiones horizontales
+        if (ball.y + ball.radius >= board.height || ball.y - ball.radius <= 0) {
+            hit = true;
+        }
+
+        return hit;
+    }
+
+    function hitEnd(ball, board) {
+        //revisa si a colicionna con b
+        var hit = false;
+        //Colisiones horizontales 
+
+        if (ball.x + ball.radius >= this.board.width || ball.x - ball.radius <= 0) {
+            hit = true;
+
+        }
+
+        return hit;
+    }
+
     function draw(ctx, element) {
 
         switch (element.kind) {
             case "square":
-                ctx.fillRect(element.x, element.y, element.width, element.height);
+                if (element.id == 1) {
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(element.x, element.y, element.width, element.height);
+                } else if (element.id == 0) {
+                    ctx.fillStyle = "yellow";
+                    ctx.fillRect(element.x, element.y, element.width, element.height);
+                } else {
+                    ctx.fillStyle = "pink"; 
+                    ctx.fillRect(element.x, element.y, element.width, element.height);
+                }
+
                 break;
             case "circle":
+
                 ctx.beginPath();
+                ctx.fillStyle = "black";
                 ctx.arc(element.x, element.y, element.radius, 0, 7);
                 ctx.fill();
                 ctx.closePath();
@@ -195,6 +249,26 @@
             } else {
                 this.direction = 1;
             }
+        },
+        collision2: function (bar) {
+            /*if (this.y + this.speed_y > this.board.height - this.radius ||
+                this.y + this.speed_y < this.radius) {
+               this.speed_y = -this.speed_y;
+            }*/
+            var relative_interesect_y = (bar.y + (bar.height / 2)) - this.y;
+
+            var normalized_intersect_y = relative_interesect_y / (bar.height / 2);
+
+            this.bounce_angle = normalized_intersect_y * this.max_bounce_angle;
+
+            this.speed_y = this.speed * -Math.sin(this.bounce_angle);
+            this.speed_x = this.speed * Math.cos(this.bounce_angle);
+
+            if (this.x > (this.board.width / 2)) {
+                this.direction = -1;
+            } else { 
+                this.direction = 1;
+            }
         }
     }
 
@@ -205,6 +279,9 @@ var board = new Board(800, 400);
 
 var bar_1 = new Bar(2, 100, 40, 100, board); 
 var bar_2 = new Bar(758, 100, 40, 100, board);
+
+var barAbajo = new Bar(0, 390, 800, 10, board);
+var barArriba = new Bar(0, 0, 800, 10, board);
 
 var canvas = document.getElementById('canvas');
 var board_view = new BoardView(canvas, board);
