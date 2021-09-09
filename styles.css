@@ -1,1 +1,21 @@
-canvas{ border:solid; }
+canvas{ 
+    border:solid;
+    color: black;
+    background-color: blanchedalmond;
+    
+ }
+ div{
+     color: royalblue;
+ }
+
+h1{
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+p{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+body{
+    text-align: center;
+    background-color: royalblue;
+}
